@@ -16,13 +16,13 @@ class Bullet extends Vehicle {
   fill(255, 200, 0);
   circle(this.pos.x, this.pos.y, this.radius * 2);
   this.path.forEach((p, index) => {
-      let alpha = map(index, 0, this.path.length-2, 0, 50);
+  
       //si vehicle est le premier du tableau (le vaisseau), on dessine en orange
       stroke('rgb(255, 166, 0)');
       
       strokeWeight(2);
       fill('rgb(255, 123,0)');
-      circle(p.x, p.y, map(index, 0, this.path.length-2, 0, 10));
+      circle(p.x, p.y, map(index, 0, this.path.length, 0, 10));
   
     });
 }
@@ -38,7 +38,15 @@ class Bullet extends Vehicle {
       // fallback si deltaTime n'est pas dispo
       this.life -= 1 / 60;
     }
-    
+    // 1. Ajouter la position actuelle
+    // IMPORTANT : Utilise .copy(), sinon tous les points du chemin bougeront avec le vaisseau
+    this.path.push(this.pos.copy());
+
+    // 2. Limiter la taille (C'est ici que tu gères la longueur)
+    // Plus le chiffre est petit, plus la traînée est courte
+    if (this.path.length > 20) { 
+        this.path.shift(); // Supprime le premier élément (le plus vieux)
+    }
   }
  
 

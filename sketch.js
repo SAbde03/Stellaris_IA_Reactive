@@ -3,15 +3,23 @@ let bullets = []; // global bullets array managed by sketch
 let followMouse = true; // when true the first vehicle will seek the mouse
 let imageFusee;
 let debugCheckbox;
+let missionTime = 0;
 let stars =[];
 let obstacles = [];
 let obstacleImages = [];
 let originalSpeed;
 let imageOvni=[];
+let explosionImage=[];
+let spaceSound;
+let explosionSound;
 function preload() {
   // on charge une image de fusée pour le vaisseau
   imageFusee = loadImage('./assets/vehicule.png');
+  explosionSound = loadSound('./assets/loud-explosion-425457.mp3');
+  spaceSound = loadSound('./assets/sfx-deep-space-travel-ambience-01-background-sound-effect-358466.mp3');
   imageOvni[0] = loadImage('./assets/ufo-4995753_1280.png');
+  explosionImage[0] = loadImage('./assets/explosion-effect-PNG-image-thumb26.png');
+  explosionImage[1] = loadImage('./assets/explosion-png-hd-atomic-explosion-transparent-background-1600.png');
   //obstacleImages[0]= loadImage('./assets/3d-cartoon-planet-with-glowing-orange-rings-and-sparkling-stars-on-transparent-background-space-astronomy-icon-for-educational-design-or-science-illustration-free-png.png');
   //obstacleImages[1]= loadImage('./assets/pngtree-3d-earth-globe-render-highlighting-global-geography-on-transparent-png-image_16511386.png');
   //[2]= loadImage('./assets/pngtree-3d-jupiter-planet-illustration-png-image_9199325.png');
@@ -20,6 +28,9 @@ function preload() {
 
 function setup() {
   
+  spaceSound.setVolume(0.3);
+  spaceSound.loop();
+  explosionSound.setVolume(0.2);
   createCanvas(windowWidth, windowHeight);
   for(let i=0; i<100;i++){
     stars.push(new Star());
@@ -61,13 +72,13 @@ function setup() {
   }
 
   // On cree des sliders pour régler les paramètres
-  creerSlidersPourProprietesVehicules();
+  //creerSlidersPourProprietesVehicules();
 
   //TODO : creerSliderPourNombreDeVehicules(nbVehicles);
-  creerSliderPourNombreDeVehicules(nbVehicles);
+  //creerSliderPourNombreDeVehicules(nbVehicles);
 
   //TODO : 
-  creerSliderPourLongueurCheminDerriereVehicules(20);
+  //creerSliderPourLongueurCheminDerriereVehicules(20);
   
 }
 function creerSliderPourNombreDeVehicules(nbVehiclesInitial) {
@@ -213,12 +224,22 @@ function draw() {
         // retirer le véhicule touché
         let index = vehicles.indexOf(vehicle);
         if (index > -1) {
-          vehicles.splice(index, 1);
+          vehicle.image= explosionImage[0];
+          //stoper l'animation du véhicule
+          vehicle.maxSpeed = 0;
+          setTimeout(() => {
+            vehicle.image= explosionImage[1];
+            explosionSound.play();
+          }, 50);
+          setTimeout(() => {
+            vehicles.splice(index, 1);
+          }, 300);
         }
         // retirer le missile
         bullets.splice(i, 1);
         return; // sortir du forEach pour éviter d'autres traitements sur ce missile
       }
+      
     });
 
     if (closestVehicle) {
@@ -226,6 +247,9 @@ function draw() {
       b.applyForce(seekForce);
     }
     b.applyForce(b.separate(bullets, 300).mult(2));
+    const avoidForce = b.avoid(obstacles);
+    avoidForce.mult(3);
+    b.applyForce(avoidForce);
     b.update();
     b.show();
     if (!b.isAlive()) {
@@ -248,19 +272,65 @@ function draw() {
       vehicle.show();
     }
 
-     vehicle.applyForce(vehicle.separate(vehicles, 60).mult(5));
+    
+    
+    vehicle.applyForce(vehicle.separate(vehicles, 60).mult(5));
     // Application de l'évitement des obstacles
     const avoidForce = vehicle.avoid(obstacles);
     // renforcer la force d'évitement
     avoidForce.mult(1.5);
     vehicle.applyForce(avoidForce);
-
+    
     vehicle.update();
     
     vehicle.edges();
   });
+
+  drawHUD();
 }
 
+
+function drawHUD() {
+  push(); // Isoler les styles pour ne pas affecter les vaisseaux
+  
+  // 1. Configuration du texte
+  textFont('Courier New'); // Police style "Terminal" ou "Code"
+  textStyle(BOLD);
+  textAlign(LEFT, BOTTOM); // Le point d'ancrage est en bas à gauche
+  textSize(16);
+  
+  
+  
+  // 3. Position de départ (marge de 20px du bord gauche et bas)
+  let x = 20;
+  let y = height - 20;
+  let interligne = 25; // Espace entre les lignes
+
+  noStroke();
+  fill(255, 255, 255); // Cyan
+  text("TIRRE: ESPACE", x, y);
+  y -= interligne;
+  text("TOGGLE DEBUG: D", x, y);
+  y -= interligne;
+  text("TOGGLE FOLLOW MOUSE: F", x, y);
+  y -= interligne;
+
+  //top left corner
+  text(`score: ${vehicles.length -1}`, x, -height+40);
+  y -= interligne;
+  //vert
+  fill(0, 255, 0);
+  // millis() donne le temps en millisecondes depuis le début
+  
+  if(vehicles.length >1){
+    missionTime= floor(millis() / 1000);
+  }
+  text("MISSION TIME: " + missionTime + "s", x, 40);
+
+ 
+  pop(); // Rétablir les styles précédents
+
+}
 
 
  
