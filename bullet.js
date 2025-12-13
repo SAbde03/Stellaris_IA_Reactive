@@ -1,5 +1,3 @@
-
-
 class Bullet extends Vehicle {
   constructor(x, y, direction) {
     super(x, y, null);
