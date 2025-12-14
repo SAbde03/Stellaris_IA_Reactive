@@ -23,7 +23,7 @@ class Obstacle {
       this.x = width;
       this.y = random(height - this.h);
     }
-    // keep pos and radius in sync
+    
     this.pos.x = this.x + this.w / 2;
     this.pos.y = this.y + this.h / 2;
     this.r = max(this.w, this.h) / 2;

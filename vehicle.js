@@ -2,12 +2,12 @@ class Vehicle {
   static debug = false;
   
   constructor(x, y, image, pathColor = "white") {
-    this.pos = createVector(x, y);
-    this.vel = createVector(1, 0);
-    this.acc = createVector(0, 0);
-    this.maxSpeed = 2;
-    this.maxForce = 0.1;
-    this.r = 46;
+    this.pos = createVector(x, y); // position initiale
+    this.vel = createVector(1, 0); // vitesse initiale
+    this.acc = createVector(0, 0); // acceleration initiale
+    this.maxSpeed = 2; // vitesse maximale
+    this.maxForce = 0.1; // force maximale appliquée
+    this.r = 46; // rayon du véhicule
 
     
     // sprite image du véhicule

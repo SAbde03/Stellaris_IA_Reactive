@@ -3,10 +3,10 @@ class Bullet extends Vehicle {
   constructor(x, y, direction) {
   super(x, y, null);
   this.vel = direction.copy().setMag(15); // vitesse initiale de la balle
-  this.maxSpeed = 8; // éviter que super.update() ne la ramène à 2
-  this.maxForce = 0.3; // permet de seek un peu
+  this.maxSpeed = 8; 
+  this.maxForce = 0.3; 
   // durée de vie en secondes
-  this.life = 6;
+  this.life = 3;
   this.radius = 5;
 }
 
@@ -39,17 +39,16 @@ class Bullet extends Vehicle {
       this.life -= 1 / 60;
     }
     // 1. Ajouter la position actuelle
-    // IMPORTANT : Utilise .copy(), sinon tous les points du chemin bougeront avec le vaisseau
     this.path.push(this.pos.copy());
 
-    // 2. Limiter la taille (C'est ici que tu gères la longueur)
-    // Plus le chiffre est petit, plus la traînée est courte
+    //Limiter la taille
     if (this.path.length > 20) { 
         this.path.shift(); // Supprime le premier élément (le plus vieux)
     }
   }
  
 
+  // vérifier si le missile est encore "vivant"
   isAlive() {
     return (
       this.life > 0 &&
