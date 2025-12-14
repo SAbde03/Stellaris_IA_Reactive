@@ -1,9 +1,5 @@
 class Star{
   constructor(){
-    //this.x=random(width);
-    //this.y=random(height);
-    //this.size=random(1,5);
-    //this.speed=random(1,1);
     this.reset(true);
   }
 

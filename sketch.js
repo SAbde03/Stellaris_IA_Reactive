@@ -5,6 +5,12 @@ let obstacles = [];
 
 let followMouse = true;
 
+// --- Demo "wow" : Follow Leader non-naïf (toggle with L) --------------------
+let followLeaderMode = false;
+const FOLLOW_BEHIND_DIST = 95;
+const FOLLOW_AHEAD_DIST = 135;
+const FOLLOW_AHEAD_RADIUS = 95;
+
 let imageFusee;
 let imageOvni=[];
 let explosionImage=[];
@@ -14,10 +20,11 @@ let debugCheckbox;
 let originalSpeed =2.5;
 
 let score = 0;
+
 let startMillis = 0;
 
+// ✅ spawn control (fix "9 enemies then stop")
 const ENEMY_TARGET_COUNT = 10;
-
 let respawnQueue = 0;
 let respawnTimer = 0;
 const RESPAWN_DELAY_MS = 250;
@@ -37,7 +44,6 @@ function preload() {
 
   explosionSound = loadSound('./assets/loud-explosion-425457.mp3');
   spaceSound = loadSound('./assets/sfx-deep-space-travel-ambience-01-background-sound-effect-358466.mp3');
-
 }
 
 function setup() {
@@ -52,10 +58,10 @@ function setup() {
     stars.push(new Star());
   }
 
-  for(let i=0; i<5;i++){
+  for(let i=0; i<4;i++){
     obstacles.push(new Obstacle());
   }
-  
+
   const nbVehicles = 10;
 
   const player = new Vehicle(width / 2, height / 2, imageFusee);
@@ -141,13 +147,31 @@ function draw() {
 
       v.show(true, true);
     } else {
-      // NPCs wander
-      v.wander();
+      // NPCs
+      if (followLeaderMode && vehicles[0]) {
+        // Follow Leader non-naïf : arrive derrière le leader + évite de le dépasser
+        v.applyForce(
+            v.followLeaderNonNaive(
+                vehicles[0],
+                FOLLOW_BEHIND_DIST,
+                FOLLOW_AHEAD_DIST,
+                FOLLOW_AHEAD_RADIUS
+            ).mult(1.35)
+        );
+      } else {
+        // Default behavior: wander
+        v.wander();
+      }
       v.show(false, true);
     }
 
     // common forces
-    v.applyForce(v.separate(vehicles, 60).mult(2.0));
+    if (followLeaderMode && i !== 0) {
+      // separation only among followers (keeps the formation readable)
+      v.applyForce(v.separate(vehicles.slice(1), 70).mult(2.2));
+    } else {
+      v.applyForce(v.separate(vehicles, 60).mult(2.0));
+    }
     v.applyForce(v.avoid(obstacles).mult(1.6));
 
     v.update();
@@ -280,9 +304,10 @@ function drawHUD() {
   text(`Enemies: ${max(0, vehicles.length - 1)} / ${ENEMY_TARGET_COUNT}`, 12, 48);
   text(`Score:   ${score}`, 12, 68);
   text(`Time:    ${t}s`, 12, 88);
+  text(`Mode:    ${followLeaderMode ? "FOLLOW LEADER" : "WANDER"}`, 12, 108);
 
   fill(180);
-  text("SPACE: shoot  |  F: toggle follow mouse  |  D: debug", 12, height - 24);
+  text("SPACE: shoot  |  F: follow mouse  |  L: follow leader  |  D: debug", 12, height - 24);
   pop();
 }
 
@@ -293,6 +318,9 @@ function keyPressed() {
   }
   if (key === "f" || key === "F") {
     followMouse = !followMouse;
+  }
+  if (key === "l" || key === "L") {
+    followLeaderMode = !followLeaderMode;
   }
   if (key === " " || keyCode === 32) {
     if (vehicles[0]) vehicles[0].fire();

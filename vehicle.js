@@ -8,6 +8,8 @@ class Vehicle {
   constructor(x, y, image = null) {
     this.pos = createVector(x, y);
     this.vel = p5.Vector.random2D().setMag(2);
+    // remember last non-zero heading (useful when speed ~ 0)
+    this.lastHeading = this.vel.heading();
     this.acc = createVector(0, 0);
 
     // tuning
@@ -39,6 +41,9 @@ class Vehicle {
     this.vel.limit(this.maxSpeed);
     this.pos.add(this.vel);
     this.acc.mult(0);
+
+    // keep lastHeading stable when nearly stopped
+    if (this.vel.magSq() > 0.0001) this.lastHeading = this.vel.heading();
 
     // trail
     this.path.push(this.pos.copy());
@@ -220,20 +225,72 @@ class Vehicle {
       this.drawVector(this.pos, ahead, "orange");
       noFill();
       stroke(255, 0, 0, 120);
-      circle(mostThreatening.pos.x, mostThreatening.pos.y, (mostThreatening.r + this.r) * 2);
+      circle(
+          mostThreatening.pos.x,
+          mostThreatening.pos.y,
+          (mostThreatening.r + this.r) * 2
+      );
     }
 
     return avoidance;
   }
 
-  // --- Gameplay helper -------------------------------------------------------
+  /**
+   * Follow leader (non-naïf):
+   * - "arrive" to a point behind the leader
+   * - if you enter a circle in front of the leader, you flee that circle (prevents overtaking)
+   *
+   * Params are distances in pixels.
+   */
+  followLeaderNonNaive(
+      leader,
+      behindDist = 90,
+      aheadDist = 120,
+      aheadRadius = 90,
+      arriveSlowRadius = 160
+  ) {
+    if (!leader) return createVector(0, 0);
+
+    // direction of leader (fallback to lastHeading if leader is (almost) stopped)
+    let leaderDir = leader.vel.copy();
+    if (leaderDir.magSq() < 0.0001) {
+      leaderDir = p5.Vector.fromAngle(leader.lastHeading ?? 0);
+    }
+    leaderDir.normalize();
+
+    const behindTarget = leader.pos.copy().sub(leaderDir.copy().mult(behindDist));
+    const aheadPoint = leader.pos.copy().add(leaderDir.copy().mult(aheadDist));
+
+    if (Vehicle.debug) {
+      // behind target
+      noStroke();
+      fill(0, 200, 255);
+      circle(behindTarget.x, behindTarget.y, 8);
+
+      // circle in front of leader (no-overtake zone)
+      noFill();
+      stroke(255, 60, 60, 180);
+      circle(aheadPoint.x, aheadPoint.y, aheadRadius * 2);
+    }
+
+    // If I'm in front zone, flee it (looks smart + avoids "passing through" the leader)
+    if (p5.Vector.dist(this.pos, aheadPoint) < aheadRadius) {
+      return this.flee(aheadPoint).mult(1.6);
+    }
+
+    // Otherwise, arrive behind leader
+    return this.seek(behindTarget, true, arriveSlowRadius);
+  }
 
   fire() {
     if (typeof Bullet === "undefined") return;
     if (typeof bullets === "undefined") return;
 
     const dir = this.vel.copy();
-    if (dir.mag() < 0.0001) dir.set(1, 0);
+    // if nearly stopped, shoot in the last moving direction
+    if (dir.magSq() < 0.0001) {
+      dir.set(cos(this.lastHeading), sin(this.lastHeading));
+    }
     dir.normalize();
 
     bullets.push(new Bullet(this.pos.x, this.pos.y, dir));
