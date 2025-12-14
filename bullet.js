@@ -6,7 +6,7 @@ class Bullet extends Vehicle {
   this.maxSpeed = 8; 
   this.maxForce = 0.3; 
   // durée de vie en secondes
-  this.life = 3;
+  this.life = 2.5;
   this.radius = 5;
 }
 

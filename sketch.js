@@ -255,6 +255,7 @@ function drawHUD() {
   if(vehicles.length <=1){
     textAlign(CENTER, CENTER);
     textSize(48);
+    textFont('Arial Black');
     fill(255, 215, 0);
     text("MISSION ACCOMPLIE!", width / 2, height / 2);
     text(missionTime + " s", width / 2, height / 2 + 60);
