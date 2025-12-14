@@ -7,5 +7,10 @@ Le vaisseau spaciale à pour premier comportement de suivre le positionement dan
 ## Ovnis
 les ovnis ne se coincident pas à l'aide du comportement "seperate".
 
+## Missile
+séparation des autres missiles
+Application de l'évitement des obstacles
+poursuivre le véhicule le plus proche
+
 
 
