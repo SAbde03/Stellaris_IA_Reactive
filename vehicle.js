@@ -25,7 +25,7 @@ class Vehicle {
     this.pathLength = 40;
     this.pathColor = pathColor;
     // largeur de la zone d'évitement devant le vaisseau (px)
-    this.largeurZoneEvitementDevantVaisseau = 50;
+    this.largeurZoneEvitementDevantVaisseau = 30;
   }
 
     wander() {

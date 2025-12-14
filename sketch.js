@@ -203,7 +203,7 @@ function draw() {
     // Application de l'évitement des obstacles
     const avoidForce = vehicle.avoid(obstacles);
     // renforcer la force d'évitement
-    avoidForce.mult(1.5);
+    avoidForce.mult(2);
     vehicle.applyForce(avoidForce);
     // mise à jour de la position
     vehicle.update();
