@@ -8,9 +8,8 @@ Le vaisseau spaciale à pour premier comportement de suivre le positionement dan
 les ovnis ne se coincident pas à l'aide du comportement "seperate".
 
 ## Missile
-séparation des autres missiles
-Application de l'évitement des obstacles
-poursuivre le véhicule le plus proche
+Les missiles evitent les obstacles et poursuivent le vehicule le plus proche
+
 
 
 
