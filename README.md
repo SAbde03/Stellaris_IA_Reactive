@@ -8,7 +8,7 @@ Le vaisseau spacial à pour premier comportement de suivre le positionement dans
 les ovnis ne se coincident pas à l'aide du comportement "seperate".
 
 ## Missiles
-Les missiles évitent les obstacles et poursuivent le vehicule le plus proche
+Les missiles qui héritent la classe vehicule évitent les obstacles et poursuivent le vehicule le plus proche
 
 
 ## Le lien vers le demo
