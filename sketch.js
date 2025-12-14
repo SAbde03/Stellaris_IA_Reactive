@@ -354,9 +354,4 @@ function keyPressed() {
   }
 }
 
-if (mouseIsPressed) {
-    vehicle.maxSpeed *= 5;
-    vehicle.maxForce = 0.2;
-  } else {
-    vehicles[0].maxSpeed = originalSpeed;
-  }
+
