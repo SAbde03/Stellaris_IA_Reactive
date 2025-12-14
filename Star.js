@@ -22,5 +22,4 @@ class Star{
     fill(255);
     circle(this.x,this.y,this.size);
   }
-
 }
