@@ -1,2 +1,6 @@
 # Stellaris_IA_Reactive
-Simulation p5.js d’IA dans l’espace: le joueur contrôle une fusée qui a plusieurs comportements, le joueur contrôle une fusée qui a plusieurs comportements. Des OVNI se déplacent et évitent des obstacles, qui seront ciblés par les missiles de la fusée.
+Ce projet implementé par p5.js est une simulaion de jeux qui conciste à piloter un vesseaux spaciale à l'aide d'un ensemble de comportement declenché soit par le mouvement de la sourie ou par l'appuie sur des touche de clavier.
+
+
+
+
