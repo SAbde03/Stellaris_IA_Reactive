@@ -301,7 +301,6 @@ function drawHUD() {
 
   const t = floor((millis() - startMillis) / 1000);
 
-  text(`Enemies: ${max(0, vehicles.length - 1)} / ${ENEMY_TARGET_COUNT}`, 12, 48);
   text(`Score:   ${score}`, 12, 68);
   text(`Time:    ${t}s`, 12, 88);
   text(`Mode:    ${followLeaderMode ? "FOLLOW LEADER" : "WANDER"}`, 12, 108);
